@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "CourseCraft",
-  description: "Turn any YouTube video into an interactive learning experience",
+  description: "Turn any YouTube video into an interactive learning ",
 };
 
 export default function RootLayout({
