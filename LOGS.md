@@ -1,0 +1,7 @@
+So till now we have chapters and subtitles, but when should we like perform those activites and other stuff?? through a btn user presses??? or in the end of chapter??
+
+If i think abt how i prefer watching big videos, idts i would want to click a btn then wait for like 20 seconds to generate and get everything, rather askin in the end must be better, we can also like do smthing like during generation, is user presses escape key, we can stop as user doesn't wanna do it..
+
+------------
+
+So b4 making above thing, i wanted to make the UI better.

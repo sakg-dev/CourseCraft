@@ -22,6 +22,7 @@ export default function Home() {
     })
     const res = await req.json()
     if (!res.success) return
+    console.log(res)
     setChapters(res.chapters)
   }
 
