@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { ytUrlParse } from "@/lib/ytTools"
 import ReactPlayer from 'react-player'
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface Chapter {
   start: number,
@@ -32,27 +34,29 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col h-screen gap-4 justify-center text-lg items-center">
+    <div className="min-h-screen min-w-screen flex justify-center p-4">
       {chapters.length > 0 ?
-        <>
-          <ReactPlayer
-            src={vidUrl}
-            controls={false}
-            width="50%"
-            height="50%"
-            playing={true}
-          />
-          <div className="h-[20vh] overflow-y-auto flex flex-col gap-4">
+        <div className="flex gap-4 h-[80vh] w-full">
+          <div className="w-[70%] h-full bg-black">
+            <ReactPlayer
+              src={vidUrl}
+              controls={false}
+              width="70%"
+              height="100%"
+              playing={true}
+            />
+          </div>
+          <div className="h-full overflow-y-auto flex flex-col truncate text-sm rounded-lg [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-br-lg [&::-webkit-scrollbar-thumb]:rounded-tr-lg [&::-webkit-scrollbar-track]:bg-stone-100 [&::-webkit-scrollbar-thumb]:bg-stone-300 border">
             {chapters.map((v, i) => {
-              return <button key={i} onClick={() => changeVidTime(v.start)} >{v.topic}</button>
+              return <div className="px-2 py-4 border-b-2 cursor-pointer transition-colors hover:bg-gray-200 duration-500" key={i} onClick={() => changeVidTime(v.start)} >{v.topic}</div>
             })}
           </div>
-        </>
+        </div>
         :
-        <>
-          <input className="border border-gray-400 h-16 w-[20vw] p-4 rounded-xl" placeholder="Enter YT URL" value={vidUrl} onChange={(e) => setVidUrl(e.target.value)} />
-          <button className="h-16 cursor-pointer w-32 rounded-4xl bg-red-500" onClick={handleBtnClick}>Submit</button>
-        </>
+        <div className="flex flex-col min-w-[50vw] gap-4 my-auto">
+          <Input className="h-12" placeholder="Enter YT URL" value={vidUrl} onChange={(e) => setVidUrl(e.target.value)} />
+          <Button size={"lg"} onClick={handleBtnClick}>Submit</Button>
+        </div>
       }
     </div>
   );
