@@ -5,6 +5,7 @@ import { cnvrtStrToSecond } from "@/lib/ytTools"
 export async function POST(req: NextRequest) {
     const { vidId }: { vidId: string } = await req.json()
 
+    // during dev
     // const subReq = await fetch(`https://transcriptapi.com/api/v2/youtube/transcript?video_url=${vidId}`, {
     //     method: "GET",
     //     headers: {

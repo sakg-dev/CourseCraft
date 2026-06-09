@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ytUrlParse } from "@/lib/ytTools"
 import ReactPlayer from 'react-player'
 import { Button } from "@/components/ui/button";
@@ -10,10 +10,26 @@ interface Chapter {
   start: number,
   topic: string
 }
+type PlayerRef = HTMLVideoElement & {
+  _playedRanges: Array<{
+    start: number,
+    end: number
+  }>,
+  _currentPlayedRange: Array<{
+    start: number,
+    end: number
+  }>
+  _seeking: boolean,
+  isLoaded: boolean,
+  api: {
+    seekTo: (time: number) => void
+  }
+}
 
 export default function Home() {
-  const [vidUrl, setVidUrl] = useState("")
+  const [vidUrl, setVidUrl] = useState("https://www.youtube.com/watch?v=rjjES5IsPdg") // during dev
   const [chapters, setChapters] = useState<Chapter[]>([])
+  const playerRef = useRef<PlayerRef>(null)
 
   const handleBtnClick = async () => {
     const vidId = ytUrlParse(vidUrl)
@@ -29,8 +45,8 @@ export default function Home() {
   }
 
   const changeVidTime = (time: number) => {
-    const vidId = ytUrlParse(vidUrl)
-    setVidUrl(`https://www.youtube.com/watch?v=${vidId}&t=${time}`)
+    // console.log(playerRef.current?.api)
+    playerRef.current?.api.seekTo(time)
   }
 
   return (
@@ -39,9 +55,10 @@ export default function Home() {
         <div className="flex gap-4 h-[80vh] w-full">
           <div className="w-[70%] h-full bg-black">
             <ReactPlayer
+              ref={playerRef}
               src={vidUrl}
               controls={false}
-              width="70%"
+              width="100%"
               height="100%"
               playing={true}
             />
