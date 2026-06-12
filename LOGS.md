@@ -4,4 +4,10 @@ If i think abt how i prefer watching big videos, idts i would want to click a bt
 
 ------------
 
-So b4 making above thing, i wanted to make the UI better.
+So b4 making above thing, i wanted to make the UI better which is why i added sm styles on it and corrected the seek so as to it seeks without reloading..
+
+------------
+
+Ok so now once i watch video and i am closer than minValue to nearest chapter, it should start generating things. But what things?
+
+For every chapters, Take the subtitles and chapters to know type of video and Generate flashback, activities or other available things based on type of video and topic..

@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ytUrlParse } from "@/lib/ytTools"
 import ReactPlayer from 'react-player'
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,12 @@ import { Input } from "@/components/ui/input";
 interface Chapter {
   start: number,
   topic: string
+}
+
+interface Transcript {
+  text: string,
+  start: number,
+  duration: number
 }
 type PlayerRef = HTMLVideoElement & {
   _playedRanges: Array<{
@@ -22,14 +28,19 @@ type PlayerRef = HTMLVideoElement & {
   _seeking: boolean,
   isLoaded: boolean,
   api: {
-    seekTo: (time: number) => void
+    seekTo: (time: number) => void,
+    getCurrentTime: () => number,
+    /**outputs 1 on normal, 2 when video is paused and 3 when video is seeking*/
+    getPlayerState: () => number
   }
 }
 
 export default function Home() {
   const [vidUrl, setVidUrl] = useState("https://www.youtube.com/watch?v=rjjES5IsPdg") // during dev
   const [chapters, setChapters] = useState<Chapter[]>([])
+  const [transcripts, setTranscripts] = useState<Transcript[]>([])
   const playerRef = useRef<PlayerRef>(null)
+  const actions = useRef<string[]>([])
 
   const handleBtnClick = async () => {
     const vidId = ytUrlParse(vidUrl)
@@ -38,14 +49,57 @@ export default function Home() {
       method: "POST",
       body: JSON.stringify({ vidId })
     })
-    const res = await req.json()
-    if (!res.success) return
-    console.log(res)
-    setChapters(res.chapters)
+    const { success, chapters, transcripts } = await req.json()
+    if (!success) return
+    setChapters(chapters)
+    setTranscripts(transcripts)
   }
 
+  useEffect(() => {
+    if (chapters.length == 0 || transcripts.length == 0) return
+
+    const minSecB4Exec = 10
+
+    const chaptersTime = chapters.map((chapter) => chapter.start)
+    const chaptersName = chapters.map((chapter) => chapter.topic)
+
+    setInterval(() => {
+      if (playerRef.current?.api && playerRef.current?.api?.getPlayerState() !== 1) return // if vid is pause or seeking
+      const currentTime = playerRef.current?.api?.getCurrentTime() as number
+      // const currentChapterTime = chaptersTime.find((chapterTime, idx) => {
+      //   if (idx == (chaptersTime.length - 1) && chapterTime < currentTime) return true // as its last chapter and current time is more than it..
+      //   else if (chapterTime < currentTime && chaptersTime[idx + 1] > currentTime) return true // if chapterTime < currentTime < nextChapterTime
+      // })
+      console.log(currentChapterTime)
+      // const currentChapterTimeIdx = chaptersTime.indexOf(currentChapterTime)
+      // const currentChapterName = chaptersName[currentChapterTimeIdx]
+      // const nearestBigNo = chaptersTime.filter((v) => v > currentTime)[0]
+
+      // if (nearestBigNo - currentTime < minSecB4Exec) {
+      //   if (actions.current.find((a) => chaptersName.includes(a))) return // not first time so no action required
+      //   // console.log("first time")
+      //   actions.current.push(currentChapterName)
+      //   // takes: current chapter's subtitle, all chaptername and current chaptername
+      //   const currentChapterTranscripts = transcripts.filter(({ start }) => {
+      //     if (currentChapterTimeIdx == (chaptersTime.length - 1) && start < currentTime) return true // its last
+      //     else if (start > currentChapterTime && start < chaptersTime[currentChapterTimeIdx + 1]) {
+      //       return true
+      //     }
+      //   })
+      //   const req = fetch("/api/generate_activity", {
+      //     method: "POST",
+      //     body: JSON.stringify({
+      //       chapterSubtitles: currentChapterTranscripts,
+      //       chapters: chaptersName,
+      //       currentChapter: currentChapterName
+      //     })
+      //   })
+      // }
+    }, 1000)
+  }, [chapters])
+
   const changeVidTime = (time: number) => {
-    // console.log(playerRef.current?.api)
+    // console.log(playerRef.current?.api.pauseVideo())
     playerRef.current?.api.seekTo(time)
   }
 
@@ -57,7 +111,7 @@ export default function Home() {
             <ReactPlayer
               ref={playerRef}
               src={vidUrl}
-              controls={false}
+              controls={true}
               width="100%"
               height="100%"
               playing={true}
