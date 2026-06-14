@@ -28,12 +28,17 @@ type PlayerRef = HTMLVideoElement & {
   }
 }
 
+interface Action {
+  name: string,
+  type: "generateActivity" | "showActivity"
+}
+
 export default function Home() {
   const [vidUrl, setVidUrl] = useState("https://www.youtube.com/watch?v=ltLUadnCyi0") // during dev
   const [chapters, setChapters] = useState<Chapter[]>([])
   const [transcripts, setTranscripts] = useState<Transcript[]>([])
   const playerRef = useRef<PlayerRef>(null)
-  const actions = useRef<string[]>([])
+  const actions = useRef<Action[]>([])
 
   const handleBtnClick = async () => {
     const vidId = ytUrlParse(vidUrl)
@@ -72,8 +77,15 @@ export default function Home() {
       const videoDuration = playerInfo?.duration as number
 
       if (nextChapter && nextChapter.start - currentTime < minSecB4Exec) {
-        if (actions.current.find((a) => chaptersName.includes(a))) return // not first time so no action required
-        actions.current.push(currentChapter?.topic) // need to pull too smwhere!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // if an element has generateActivity type but not currentChapter, rmv it.
+        actions.current = actions.current.filter((a) => !(a.type == "generateActivity" && a.name != currentChapter?.topic))
+        
+        if (actions.current.find((a) => chaptersName.includes(a.name) && a.type == "generateActivity")) return // not first time so no action required
+
+        actions.current.push({
+          name: currentChapter?.topic,
+          type: "generateActivity"
+        })
 
         // chapterStart < start < chapterEnd
         const currentChapterTranscripts = transcripts.filter(({ start }) => start > currentChapter.start && start < nextChapter.start)

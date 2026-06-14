@@ -36,6 +36,7 @@ export async function POST(req: NextRequest) {
         const systemPrompt = [
             "You convert YouTube chapter transcripts into interactive learning activities.",
             "Tasks: classify the chapter into one type, then generate varied activities from the transcript only.",
+            "If the chapter has no learnable content (intro, outro, sponsor, filler), return failure with reason 'no question needed'.",
             "",
             "Chapter types:",
             Object.entries(chapterTypes).map(([k, v]) => `${k}: ${v}`).join("\n"),
@@ -74,6 +75,6 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({ success: true, message: jsonRes })
     } catch (error) {
-        return NextResponse.json({ success: false, error })
+        return NextResponse.json({ success: false, error: "Something went wrong" })
     }
 }

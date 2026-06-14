@@ -18,4 +18,9 @@ Ok so to do above thing, i need a good prompt that will generate unambigiuos res
 Current prompt and other things' problems:
 - [] limited activites
 - [x] ai not responding with activity as for flashcard, the question and answer..
-- [] Ai js have objective to ask doesn't care if it is needed or not, need a way so that ai can deny if its like intro or such useless things instead of asking to explain and cons and pros lol.
+- [x] Ai js have objective to ask doesn't care if it is needed or not, need a way so that ai can deny if its like intro or such useless things instead of asking to explain and cons and pros lol.
+
+alrit hopefully solved both excpet limited activites, we will be doin that as we go.. But firstly now we have activites and we are making req from frontend, lets handle req's res, actions, and other stuff and actually show the user the activites..
+
+------------
+
