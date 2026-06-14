@@ -17,21 +17,14 @@ interface Transcript {
   duration: number
 }
 type PlayerRef = HTMLVideoElement & {
-  _playedRanges: Array<{
-    start: number,
-    end: number
-  }>,
-  _currentPlayedRange: Array<{
-    start: number,
-    end: number
-  }>
-  _seeking: boolean,
-  isLoaded: boolean,
   api: {
     seekTo: (time: number) => void,
-    getCurrentTime: () => number,
-    /**outputs 1 on normal, 2 when video is paused and 3 when video is seeking*/
-    getPlayerState: () => number
+    playerInfo: {
+      currentTime: number,
+      /**outputs 1 on normal, 2 when video is paused and 3 when video is seeking*/
+      playerState: number,
+      duration: number
+    }
   }
 }
 
@@ -45,7 +38,7 @@ export default function Home() {
   const handleBtnClick = async () => {
     const vidId = ytUrlParse(vidUrl)
 
-    const req = await fetch("/api/get_yt", {
+    const req = await fetch("/api/getYt", {
       method: "POST",
       body: JSON.stringify({ vidId })
     })
@@ -59,47 +52,50 @@ export default function Home() {
     if (chapters.length == 0 || transcripts.length == 0) return
 
     const minSecB4Exec = 10
-
-    const chaptersTime = chapters.map((chapter) => chapter.start)
     const chaptersName = chapters.map((chapter) => chapter.topic)
 
     setInterval(() => {
-      if (playerRef.current?.api && playerRef.current?.api?.getPlayerState() !== 1) return // if vid is pause or seeking
-      const currentTime = playerRef.current?.api?.getCurrentTime() as number
-      // const currentChapterTime = chaptersTime.find((chapterTime, idx) => {
-      //   if (idx == (chaptersTime.length - 1) && chapterTime < currentTime) return true // as its last chapter and current time is more than it..
-      //   else if (chapterTime < currentTime && chaptersTime[idx + 1] > currentTime) return true // if chapterTime < currentTime < nextChapterTime
-      // })
-      console.log(currentChapterTime)
-      // const currentChapterTimeIdx = chaptersTime.indexOf(currentChapterTime)
-      // const currentChapterName = chaptersName[currentChapterTimeIdx]
-      // const nearestBigNo = chaptersTime.filter((v) => v > currentTime)[0]
+      const playerInfo = playerRef.current?.api?.playerInfo
+      const playerState = playerInfo?.playerState
+      if (playerState !== 1) return // if vid is pause or seeking
 
-      // if (nearestBigNo - currentTime < minSecB4Exec) {
-      //   if (actions.current.find((a) => chaptersName.includes(a))) return // not first time so no action required
-      //   // console.log("first time")
-      //   actions.current.push(currentChapterName)
-      //   // takes: current chapter's subtitle, all chaptername and current chaptername
-      //   const currentChapterTranscripts = transcripts.filter(({ start }) => {
-      //     if (currentChapterTimeIdx == (chaptersTime.length - 1) && start < currentTime) return true // its last
-      //     else if (start > currentChapterTime && start < chaptersTime[currentChapterTimeIdx + 1]) {
-      //       return true
-      //     }
-      //   })
-      //   const req = fetch("/api/generate_activity", {
-      //     method: "POST",
-      //     body: JSON.stringify({
-      //       chapterSubtitles: currentChapterTranscripts,
-      //       chapters: chaptersName,
-      //       currentChapter: currentChapterName
-      //     })
-      //   })
-      // }
+      const currentTime = playerInfo?.currentTime as number
+      const currentChapter = chapters.find((chapter, idx) => {
+        if (idx == (chapters.length - 1) && chapter.start < currentTime) return true // as its last chapter and current time is more than it..
+        else if (chapter.start < currentTime && chapters[idx + 1].start > currentTime) return true // if chapterTime < currentTime < nextChapterTime
+      })
+
+      if (!currentChapter) return
+
+      const currentChapterIdx = chapters.indexOf(currentChapter)
+      const nextChapter = chapters[currentChapterIdx + 1]
+      const videoDuration = playerInfo?.duration as number
+
+      // console.log()
+
+      if (nextChapter && nextChapter.start - currentTime < minSecB4Exec) {
+        if (actions.current.find((a) => chaptersName.includes(a))) return // not first time so no action required
+        // actions.current.push(currentChapter?.topic)
+
+        // chapterStart < start < chapterEnd
+        const currentChapterTranscripts = transcripts.filter(({ start }) => start > currentChapter.start && start < nextChapter.start)
+        const currentChapterTranscriptsStr = currentChapterTranscripts.map((transcript) => transcript.text)
+
+        const req = fetch("/api/generateAcitivity", {
+          method: "POST",
+          body: JSON.stringify({
+            chapterSubtitles: currentChapterTranscriptsStr,
+            chapters: chaptersName,
+            currentChapter: currentChapter?.topic
+          })
+        }).then((v) => v.json()).then((v) => console.log(v))
+      } else if (currentChapterIdx == (chapters.length - 1) && (videoDuration - currentTime) < minSecB4Exec) {
+        console.log("Video ending..")
+      }
     }, 1000)
   }, [chapters])
 
   const changeVidTime = (time: number) => {
-    // console.log(playerRef.current?.api.pauseVideo())
     playerRef.current?.api.seekTo(time)
   }
 
