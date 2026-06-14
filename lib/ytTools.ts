@@ -6,6 +6,13 @@ export const ytUrlParse = (url: string) => {
 }
 
 export const cnvrtStrToSecond = (str: string) => {
-    const [hr, min, sec] = str.split(":").map((v) => Number(v))
-    return hr * 3600 + min * 60 + sec
+    const time = str.split(":").map((v) => Number(v))
+    if (Number.isNaN(time.find((v) => Number.isNaN(v)))) return null
+    if (time.length == 2) {
+        return time[0] * 60 + time[1]
+    } else if (time.length == 3) {
+        return time[0] * 3600 + time[1] * 60 + time[0]
+    } else {
+        return null
+    }
 }

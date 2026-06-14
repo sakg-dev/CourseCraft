@@ -29,7 +29,7 @@ type PlayerRef = HTMLVideoElement & {
 }
 
 export default function Home() {
-  const [vidUrl, setVidUrl] = useState("https://www.youtube.com/watch?v=rjjES5IsPdg") // during dev
+  const [vidUrl, setVidUrl] = useState("https://www.youtube.com/watch?v=ltLUadnCyi0") // during dev
   const [chapters, setChapters] = useState<Chapter[]>([])
   const [transcripts, setTranscripts] = useState<Transcript[]>([])
   const playerRef = useRef<PlayerRef>(null)

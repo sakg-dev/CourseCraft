@@ -25,14 +25,16 @@ export async function POST(req: NextRequest) {
         const start = v.match(/.*?((?:([0-5]?[0-9]):)?([0-5]?[0-9]):([0-5][0-9]))/)?.[0]
         if (start) {
             const startsInSeconds = cnvrtStrToSecond(start)
+            if (!startsInSeconds && startsInSeconds !== 0) return null
+
+            let topic = v.split(start)[1].trim()
+            if (topic.startsWith("-")) topic = topic.substring(1).trim()
             return {
                 start: startsInSeconds,
-                topic: v.split(start)[1].trim()
+                topic: topic
             }
-        } else {
-            return v
-        }
-    })
+        } else return null
+    }).filter((v: { start: number, topic: string } | null) => v != null)
 
     return NextResponse.json({
         success: true,
