@@ -71,11 +71,9 @@ export default function Home() {
       const nextChapter = chapters[currentChapterIdx + 1]
       const videoDuration = playerInfo?.duration as number
 
-      // console.log()
-
       if (nextChapter && nextChapter.start - currentTime < minSecB4Exec) {
         if (actions.current.find((a) => chaptersName.includes(a))) return // not first time so no action required
-        // actions.current.push(currentChapter?.topic)
+        actions.current.push(currentChapter?.topic) // need to pull too smwhere!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         // chapterStart < start < chapterEnd
         const currentChapterTranscripts = transcripts.filter(({ start }) => start > currentChapter.start && start < nextChapter.start)
