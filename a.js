@@ -17,3 +17,11 @@
 //     "hi"
 // ].join("\n")
 // console.log(str)
+
+// const chapterTypes = {
+//     theorotical_study: "Concepts, definations, theory",
+//     visualizing_study: "Concepts best understood visually(diagrams, animations, mental models)",
+//     theorotical_computer_science: "Algorithms, DSA, etc",
+//     coding: "Hands on programming: implement a feature, solve a coding challenge"
+// }
+// console.log(`${Object.entries(chapterTypes).map(([k,v])=>`${k}: ${v}`).join("\n")}`)

@@ -1,49 +1,58 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const availableActivities = [
+interface Activity {
+    id: string,
+    description: string,
+    parameters: {
+        id: string,
+        description: string
+    }[]
+}
+
+const availableActivities: Activity[] = [
     {
         id: "flashcard",
-        description: "Run flashcard learning"
+        description: "Run flashcard learning",
+        parameters: [{ id: "question", description: "Short question" }, { id: "answer", description: "Short answer(Max 8 words)" }]
+    },
+    {
+        id: "coding_block",
+        description: "Coding block with tests",
+        parameters: [{ id: "coding_challenge", description: "Coding question/challenges with some examples. Supports Markdown" }, { id: "test_code", description: "Tests that calls functions in user's code and matches result." }, { id: "code", description: "Pre written code that defines structure like function name, its call etc" }]
     }
 ]
 
-const chapterTypes = ["theorotical_study", "visualizing_study", "theorotical_computer_science", "coding"]
+const chapterTypes = {
+    theorotical_study: "Concepts, definations, theory",
+    visualizing_study: "Concepts best understood visually(diagrams, animations, mental models)",
+    theorotical_computer_science: "Algorithms, DSA, etc",
+    coding: "Hands on programming: implement a feature, solve a coding challenge"
+}
 
 export async function POST(req: NextRequest) {
     try {
         const { chapterSubtitles, chapters, currentChapter } = await req.json()
 
-        const prompt = [
-            "You are an AI that transforms long YouTube videos into interactive, engaging courses.",
+        const systemPrompt = [
+            "You convert YouTube chapter transcripts into interactive learning activities.",
+            "Tasks: classify the chapter into one type, then generate varied activities from the transcript only.",
             "",
-            "Your task:",
-            "Given a specific chapter from a video, you must:",
-            "1. Classify the chapter into one of the supported chapter types",
-            "2. Generate appropriate learning activities for that chapter",
+            "Chapter types:",
+            Object.entries(chapterTypes).map(([k, v]) => `${k}: ${v}`).join("\n"),
             "",
-            "Supported chapter types:",
-            chapterTypes.join(", "),
+            "Available activities:",
+            JSON.stringify(availableActivities),
             "",
-            "Supported activities:",
-            JSON.stringify(availableActivities, null, 2),
-            "",
-            "Inputs:",
-            "",
-            "Chapter subtitles (current chapter transcript):",
-            chapterSubtitles.join(" "),
-            "",
-            "All chapters (full video structure):",
-            JSON.stringify(chapters, null, 2),
-            "",
-            "Current chapter:",
-            JSON.stringify(currentChapter, null, 2),
-            "",
-            "Output format:",
-            "Respond with strict JSON only, no markdown, no explanation.",
-            "",
-            'On success: { "success": true, "chapter_type": "<one of the supported chapter types>", "activities": [] }',
-            'On failure: { "success": false, "reason": "<short explanation of what went wrong>" }',
-        ].join("\n");
+            "Output strict JSON only, no markdown or explanation",
+            'Success: { "success": true, "chapter_type": "<type>", "activities": [{ "id": "<activity_id>", "parameters": { "<param_id>": "<value>" } }] }',
+            'Failure: { "success": false, "reason": "<explanation>" }',
+        ].join("\n")
+
+        const userPrompt = [
+            "Chapters:", JSON.stringify(chapters),
+            "Current chapter:", JSON.stringify(currentChapter),
+            "Transcript:", chapterSubtitles.join(" "),
+        ].join("\n")
 
         const reqAi = await fetch("https://ai.hackclub.com/proxy/v1/chat/completions", {
             method: "POST",
@@ -54,7 +63,8 @@ export async function POST(req: NextRequest) {
             body: JSON.stringify({
                 model: "qwen/qwen3-32b",
                 messages: [
-                    { role: "user", content: prompt },
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: userPrompt },
                 ],
             })
         });

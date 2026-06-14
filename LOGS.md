@@ -11,3 +11,11 @@ So b4 making above thing, i wanted to make the UI better which is why i added sm
 Ok so now once i watch video and i am closer than minValue to nearest chapter, it should start generating things. But what things?
 
 For every chapters, Take the subtitles and chapters to know type of video and Generate flashback, activities or other available things based on type of video and topic..
+
+------------
+
+Ok so to do above thing, i need a good prompt that will generate unambigiuos response from ai.
+Current prompt and other things' problems:
+- [] limited activites
+- [x] ai not responding with activity as for flashcard, the question and answer..
+- [] Ai js have objective to ask doesn't care if it is needed or not, need a way so that ai can deny if its like intro or such useless things instead of asking to explain and cons and pros lol.
