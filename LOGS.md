@@ -24,3 +24,8 @@ alrit hopefully solved both excpet limited activites, we will be doin that as we
 
 ------------
 
+So what we have to do once we get value in frontend? 
+
+I think we do as we doing: make a promise fetch and whenever it gets response, we kind of store value(activities) in sm state ig and show to user.
+Alrit i have it in a state, now wt? ig we have to find a way to show to user, mustnot be like a thing we impose but like user can open and do if user wants.. I think we should do like show a bubble, if it is clicked, open dialog for activities, but what if I want to see something in the vid b4 like answering or doing? ig we can make it like expandable and collapsable, user can just collaps it and watch then again expand and submit.. btw i really wanna do transitions while like collapsing and expanding same like macbook transition ngl.
+

@@ -25,3 +25,7 @@
 //     coding: "Hands on programming: implement a feature, solve a coding challenge"
 // }
 // console.log(`${Object.entries(chapterTypes).map(([k,v])=>`${k}: ${v}`).join("\n")}`)
+
+// const a = {aa:"abc"}
+// const {aa,bb} = a
+// console.log(aa, bb)

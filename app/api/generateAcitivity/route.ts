@@ -1,13 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-
-interface Activity {
-    id: string,
-    description: string,
-    parameters: {
-        id: string,
-        description: string
-    }[]
-}
+import type { Activity } from "@/lib/types"
 
 const availableActivities: Activity[] = [
     {
@@ -45,7 +37,7 @@ export async function POST(req: NextRequest) {
             JSON.stringify(availableActivities),
             "",
             "Output strict JSON only, no markdown or explanation",
-            'Success: { "success": true, "chapter_type": "<type>", "activities": [{ "id": "<activity_id>", "parameters": { "<param_id>": "<value>" } }] }',
+            'Success: { "success": true, "chapterType": "<type>", "activities": [{ "id": "<activity_id>", "parameters": { "<param_id>": "<value>" } }] }',
             'Failure: { "success": false, "reason": "<explanation>" }',
         ].join("\n")
 

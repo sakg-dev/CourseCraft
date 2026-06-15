@@ -5,40 +5,16 @@ import { ytUrlParse } from "@/lib/ytTools"
 import ReactPlayer from 'react-player'
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-interface Chapter {
-  start: number,
-  topic: string
-}
-
-interface Transcript {
-  text: string,
-  start: number,
-  duration: number
-}
-type PlayerRef = HTMLVideoElement & {
-  api: {
-    seekTo: (time: number) => void,
-    playerInfo: {
-      currentTime: number,
-      /**outputs 1 on normal, 2 when video is paused and 3 when video is seeking*/
-      playerState: number,
-      duration: number
-    }
-  }
-}
-
-interface Action {
-  name: string,
-  type: "generateActivity" | "showActivity"
-}
+import type { CurrentChapterActionsDataType, Chapter, Transcript, PlayerRef, Action } from "@/lib/types"
 
 export default function Home() {
   const [vidUrl, setVidUrl] = useState("https://www.youtube.com/watch?v=ltLUadnCyi0") // during dev
   const [chapters, setChapters] = useState<Chapter[]>([])
   const [transcripts, setTranscripts] = useState<Transcript[]>([])
   const playerRef = useRef<PlayerRef>(null)
-  const actions = useRef<Action[]>([])
+  const [currentChapterActionsData, setCurrentChapterActionsData] = useState<CurrentChapterActionsDataType>()
+  // const [bubbleExpanded, setBubbleExpended] = useState(false)
+  const actions = useRef<Action[]>([]) // if only used for generateActivity, we can make it an obj instead of an array..
 
   const handleBtnClick = async () => {
     const vidId = ytUrlParse(vidUrl)
@@ -52,6 +28,17 @@ export default function Home() {
     setChapters(chapters)
     setTranscripts(transcripts)
   }
+
+  useEffect(() => {
+    if (currentChapterActionsData) {
+      if (currentChapterActionsData.success) {
+        const { activities, chapterType } = currentChapterActionsData
+
+      } else {
+        console.warn("Uhh chatbot isn't happy while generating current chapter's activities: ", currentChapterActionsData)
+      }
+    }
+  }, [currentChapterActionsData])
 
   useEffect(() => {
     if (chapters.length == 0 || transcripts.length == 0) return
@@ -79,7 +66,7 @@ export default function Home() {
       if (nextChapter && nextChapter.start - currentTime < minSecB4Exec) {
         // if an element has generateActivity type but not currentChapter, rmv it.
         actions.current = actions.current.filter((a) => !(a.type == "generateActivity" && a.name != currentChapter?.topic))
-        
+
         if (actions.current.find((a) => chaptersName.includes(a.name) && a.type == "generateActivity")) return // not first time so no action required
 
         actions.current.push({
@@ -91,14 +78,21 @@ export default function Home() {
         const currentChapterTranscripts = transcripts.filter(({ start }) => start > currentChapter.start && start < nextChapter.start)
         const currentChapterTranscriptsStr = currentChapterTranscripts.map((transcript) => transcript.text)
 
-        const req = fetch("/api/generateAcitivity", {
+        fetch("/api/generateAcitivity", {
           method: "POST",
           body: JSON.stringify({
             chapterSubtitles: currentChapterTranscriptsStr,
             chapters: chaptersName,
             currentChapter: currentChapter?.topic
           })
-        }).then((v) => v.json()).then((v) => console.log(v))
+        }).then((v) => v.json()).then((res) => {
+          if (res?.success) {
+            const data = res.message as CurrentChapterActionsDataType
+            setCurrentChapterActionsData(data)
+            return
+          }
+          console.warn("Something went wrong technically while getting current chapter's activities: ", res)
+        })
       } else if (currentChapterIdx == (chapters.length - 1) && (videoDuration - currentTime) < minSecB4Exec) {
         console.log("Video ending..")
       }
