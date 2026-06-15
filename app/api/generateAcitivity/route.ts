@@ -8,7 +8,7 @@ const availableActivities: Activity[] = [
         parameters: [{ id: "question", description: "Short question" }, { id: "answer", description: "Short answer(Max 8 words)" }]
     },
     {
-        id: "coding_block",
+        id: "codingBlock",
         description: "Coding block with tests",
         parameters: [{ id: "coding_challenge", description: "Coding question/challenges with some examples. Supports Markdown" }, { id: "test_code", description: "Tests that calls functions in user's code and matches result." }, { id: "code", description: "Pre written code that defines structure like function name, its call etc" }]
     }

@@ -5,4 +5,6 @@ Todos:
 - [ ] 
 
 ### AI Usage
-For generating prompts, 
+- Generating prompts for /api/generateActivity
+- Suggesting to use memo in commit e14d8768d9e314d393ae7c55a26f75bc16bebfce
+- 

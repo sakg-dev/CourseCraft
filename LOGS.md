@@ -38,3 +38,4 @@ rn  problem is idk why whenever we open dialog, it runs our yt video, even if we
 turned out it was ez, it was rerendering as we were changing state when we expand or collapse the bubble, so used memo(it rerender only if props are changed)
 
 ------------
+

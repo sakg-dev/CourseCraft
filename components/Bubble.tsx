@@ -13,9 +13,6 @@ import { Button } from './ui/button'
 
 const Bubble = ({ currentChapterData, setCurrentChapterData }: { currentChapterData: CurrentChapterDataType, setCurrentChapterData: Dispatch<SetStateAction<CurrentChapterDataType | undefined>> }) => {
     const [currentActivityIdx, setCurrentActivityIdx] = useState(0)
-    useEffect(() => {
-        console.log(currentActivityIdx)
-    }, [currentActivityIdx])
 
     return (
         <>
@@ -24,14 +21,14 @@ const Bubble = ({ currentChapterData, setCurrentChapterData }: { currentChapterD
                     ?
                     <div>
                         <Dialog open onOpenChange={() => setCurrentChapterData({ ...currentChapterData, bubbleExpanded: false })}>
-                            <DialogContent>
+                            <DialogContent className={"min-h-[60vh] min-w-[50vw]"}>
                                 <DialogHeader>
-                                    <DialogTitle>Are you absolutely sure?</DialogTitle>
+                                    <DialogTitle className='hidden'>Activity</DialogTitle>
                                     <DialogDescription asChild>
-                                        <div className='min-h-[50vh] w-[60vw]'>
-                                            <p>Perform following activities:</p>
+                                        <div className='max-w-full h-full flex flex-col items-center justify-between m-4 gap-4'>
+                                            <p className='text-lg font-bold text-black'>{currentChapterData.activities![currentActivityIdx].id} | {currentActivityIdx + 1}/{currentChapterData.activities?.length}:</p>
                                             <Activity activity={currentChapterData?.activities?.[currentActivityIdx] as ActivityType} />
-                                            <div className='flex'>
+                                            <div className='flex w-full justify-between'>
                                                 <Button onClick={() => {
                                                     if (currentActivityIdx !== 0) { // if its not 1st
                                                         setCurrentActivityIdx(currentActivityIdx - 1)
