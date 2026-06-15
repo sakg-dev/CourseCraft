@@ -5,15 +5,15 @@ import { ytUrlParse } from "@/lib/ytTools"
 import ReactPlayer from 'react-player'
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { CurrentChapterActionsDataType, Chapter, Transcript, PlayerRef, Action } from "@/lib/types"
+import type { CurrentChapterDataType, Chapter, Transcript, PlayerRef, Action } from "@/lib/types"
+import Bubble from "@/components/Bubble";
 
 export default function Home() {
   const [vidUrl, setVidUrl] = useState("https://www.youtube.com/watch?v=ltLUadnCyi0") // during dev
   const [chapters, setChapters] = useState<Chapter[]>([])
   const [transcripts, setTranscripts] = useState<Transcript[]>([])
   const playerRef = useRef<PlayerRef>(null)
-  const [currentChapterActionsData, setCurrentChapterActionsData] = useState<CurrentChapterActionsDataType>()
-  // const [bubbleExpanded, setBubbleExpended] = useState(false)
+  const [currentChapterData, setCurrentChapterData] = useState<CurrentChapterDataType>()
   const actions = useRef<Action[]>([]) // if only used for generateActivity, we can make it an obj instead of an array..
 
   const handleBtnClick = async () => {
@@ -30,15 +30,12 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if (currentChapterActionsData) {
-      if (currentChapterActionsData.success) {
-        const { activities, chapterType } = currentChapterActionsData
-
-      } else {
-        console.warn("Uhh chatbot isn't happy while generating current chapter's activities: ", currentChapterActionsData)
+    if (currentChapterData) {
+      if (!currentChapterData.success) {
+        console.warn("Uhh chatbot isn't happy while generating current chapter's activities: ", currentChapterData)
       }
     }
-  }, [currentChapterActionsData])
+  }, [currentChapterData])
 
   useEffect(() => {
     if (chapters.length == 0 || transcripts.length == 0) return
@@ -87,8 +84,8 @@ export default function Home() {
           })
         }).then((v) => v.json()).then((res) => {
           if (res?.success) {
-            const data = res.message as CurrentChapterActionsDataType
-            setCurrentChapterActionsData(data)
+            const data = res.message as CurrentChapterDataType
+            setCurrentChapterData({ ...data, bubbleExpanded: false })
             return
           }
           console.warn("Something went wrong technically while getting current chapter's activities: ", res)
@@ -104,7 +101,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen min-w-screen flex justify-center p-4">
+    <div className="min-h-screen min-w-screen flex relative justify-center p-4">
       {chapters.length > 0 ?
         <div className="flex gap-4 h-[80vh] w-full">
           <div className="w-[70%] h-full bg-black">
@@ -122,6 +119,7 @@ export default function Home() {
               return <div className="px-2 py-4 border-b-2 cursor-pointer transition-colors hover:bg-gray-200 duration-500" key={i} onClick={() => changeVidTime(v.start)} >{v.topic}</div>
             })}
           </div>
+          {(currentChapterData && currentChapterData.success) && <Bubble setCurrentChapterData={setCurrentChapterData} currentChapterData={currentChapterData} />}
         </div>
         :
         <div className="flex flex-col min-w-[50vw] gap-4 my-auto">

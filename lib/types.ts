@@ -35,9 +35,10 @@ export interface Action {
     type: "generateActivity" | "showActivity"
 }
 
-export interface CurrentChapterActionsDataType {
+export interface CurrentChapterDataType {
     activities?: Activity[],
     chapterType?: string,
     reason?: string,
+    bubbleExpanded?: boolean,
     success: boolean
 }
