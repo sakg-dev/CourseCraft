@@ -16,6 +16,7 @@ const Bubble = ({ currentChapterData, setCurrentChapterData }: { currentChapterD
     useEffect(() => {
         console.log(currentActivityIdx)
     }, [currentActivityIdx])
+
     return (
         <>
             {

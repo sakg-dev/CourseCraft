@@ -33,3 +33,8 @@ Alrit i have it in a state, now wt? ig we have to find a way to show to user, mu
 
 So in frontend, i have added a bubbleExpended property in the currentChapterData as i want single state for currentChapter's all data.
 So if bubbleExpended is true, we show dialog or else we show the bubble.. So what after we show dialog, we need to put the activities in it, and it is where we will have to define every component like Flashcard, Codeblock etc.
+
+rn  problem is idk why whenever we open dialog, it runs our yt video, even if we have paused it. gotta see it why. then we work for activity..
+turned out it was ez, it was rerendering as we were changing state when we expand or collapse the bubble, so used memo(it rerender only if props are changed)
+
+------------

@@ -1,12 +1,23 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react";
+import { memo, RefObject, useEffect, useRef, useState } from "react";
 import { ytUrlParse } from "@/lib/ytTools"
 import ReactPlayer from 'react-player'
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { CurrentChapterDataType, Chapter, Transcript, PlayerRef, Action } from "@/lib/types"
 import Bubble from "@/components/Bubble";
+
+const YTPlayer = memo(({ playerRef, vidUrl }: { playerRef: RefObject<PlayerRef | null>, vidUrl: string }) => {
+  return <ReactPlayer
+    ref={playerRef}
+    src={vidUrl}
+    controls={true}
+    width="100%"
+    height="100%"
+    playing={true}
+  />
+})
 
 export default function Home() {
   const [vidUrl, setVidUrl] = useState("https://www.youtube.com/watch?v=ltLUadnCyi0") // during dev
@@ -105,14 +116,7 @@ export default function Home() {
       {chapters.length > 0 ?
         <div className="flex gap-4 h-[80vh] w-full">
           <div className="w-[70%] h-full bg-black">
-            <ReactPlayer
-              ref={playerRef}
-              src={vidUrl}
-              controls={true}
-              width="100%"
-              height="100%"
-              playing={true}
-            />
+            <YTPlayer playerRef={playerRef} vidUrl={vidUrl} />
           </div>
           <div className="h-full overflow-y-auto min-w-[25vw] flex flex-col truncate text-sm rounded-lg [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-br-lg [&::-webkit-scrollbar-thumb]:rounded-tr-lg [&::-webkit-scrollbar-track]:bg-stone-100 [&::-webkit-scrollbar-thumb]:bg-stone-300 border">
             {chapters.map((v, i) => {
