@@ -1,6 +1,7 @@
 export interface Activity {
     id: string,
-    description: string,
+    /**Not included in ai response*/
+    description?: string,
     parameters: {
         id: string,
         description: string

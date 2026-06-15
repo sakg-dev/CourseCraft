@@ -1,29 +1,48 @@
-import React, { Dispatch, SetStateAction } from 'react'
-import type { CurrentChapterDataType } from "@/lib/types"
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import type { Activity as ActivityType, CurrentChapterDataType } from "@/lib/types"
 import { MessageCircle } from 'lucide-react'
 import {
     Dialog,
     DialogContent,
     DialogDescription,
     DialogHeader,
-    DialogTitle,
-    DialogTrigger,
+    DialogTitle
 } from "@/components/ui/dialog"
+import Activity from './Activity'
+import { Button } from './ui/button'
 
 const Bubble = ({ currentChapterData, setCurrentChapterData }: { currentChapterData: CurrentChapterDataType, setCurrentChapterData: Dispatch<SetStateAction<CurrentChapterDataType | undefined>> }) => {
+    const [currentActivityIdx, setCurrentActivityIdx] = useState(0)
+    useEffect(() => {
+        console.log(currentActivityIdx)
+    }, [currentActivityIdx])
     return (
         <>
             {
                 currentChapterData?.bubbleExpanded
                     ?
                     <div>
-                        <Dialog open onOpenChange={(e) => setCurrentChapterData({ ...currentChapterData, bubbleExpanded: false })}>
+                        <Dialog open onOpenChange={() => setCurrentChapterData({ ...currentChapterData, bubbleExpanded: false })}>
                             <DialogContent>
                                 <DialogHeader>
                                     <DialogTitle>Are you absolutely sure?</DialogTitle>
-                                    <DialogDescription>
-                                        This action cannot be undone. This will permanently delete your account
-                                        and remove your data from our servers.
+                                    <DialogDescription asChild>
+                                        <div className='min-h-[50vh] w-[60vw]'>
+                                            <p>Perform following activities:</p>
+                                            <Activity activity={currentChapterData?.activities?.[currentActivityIdx] as ActivityType} />
+                                            <div className='flex'>
+                                                <Button onClick={() => {
+                                                    if (currentActivityIdx !== 0) { // if its not 1st
+                                                        setCurrentActivityIdx(currentActivityIdx - 1)
+                                                    }
+                                                }}>Prev</Button>
+                                                <Button onClick={() => {
+                                                    if (currentChapterData?.activities && (currentChapterData.activities?.length - 1) > currentActivityIdx) { // if its not last
+                                                        setCurrentActivityIdx(currentActivityIdx + 1)
+                                                    }
+                                                }}>Next</Button>
+                                            </div>
+                                        </div>
                                     </DialogDescription>
                                 </DialogHeader>
                             </DialogContent>
