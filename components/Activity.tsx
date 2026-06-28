@@ -6,15 +6,16 @@ const activities = {
     flashcard: Flashcard,
     codingBlock: CodingBlock
 }
-const Comp = ({ activityId }: { activityId: keyof typeof activities }) => {
-    const MyComp = activities[activityId]  
-    return <MyComp />
+const Comp = ({ activityId, ...props }: { activityId: string }) => {
+    const activityIdWithType = activityId as keyof typeof activities
+    const MyComp = activities[activityIdWithType]
+    return <MyComp {...props} />
 }
 
 const Activity = ({ activity }: { activity: ActivityType }) => {
     return (
         <div className='bg-red-400 w-full h-full'>
-            <Comp activityId={activity.id} />
+            <Comp activityId={activity.id} {...activity.parameters} />
         </div>
     )
 }

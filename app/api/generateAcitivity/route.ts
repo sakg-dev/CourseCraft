@@ -63,10 +63,12 @@ export async function POST(req: NextRequest) {
         });
 
         const res = await reqAi.json()
+        console.log(res)
         const jsonRes = JSON.parse(res.choices[0].message.content)
 
         return NextResponse.json({ success: true, message: jsonRes })
     } catch (error) {
+        console.log(error)
         return NextResponse.json({ success: false, error: "Something went wrong" })
     }
 }

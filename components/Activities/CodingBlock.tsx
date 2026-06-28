@@ -1,9 +1,9 @@
 import React from 'react'
 
-const CodingBlock = () => {
+const CodingBlock = ({ coding_challenge, test_code, code }: { coding_challenge: string, test_code: string, code: string }) => {
   return (
-    <div>
-      
+    <div className='min-h-full w-full bg-red-500'>
+
     </div>
   )
 }
